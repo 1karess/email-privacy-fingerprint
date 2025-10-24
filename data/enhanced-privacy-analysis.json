@@ -1,0 +1,158 @@
+{
+  "timestamp": "2025-10-24T16:46:31.017492",
+  "basic_stats": {
+    "total_logs": 20,
+    "unique_tests": 20,
+    "success_rate": 100.0
+  },
+  "privacy_analysis": {
+    "average_privacy_score": 100.0,
+    "ip_protection": {
+      "type": "proxy",
+      "owner": "Google LLC",
+      "is_proxy": true
+    },
+    "user_agent_protection": {
+      "email_client": "Gmail",
+      "platform": "Web",
+      "is_generic": true
+    },
+    "privacy_rating": "优秀"
+  },
+  "fingerprint_analysis": {
+    "total_requests": 20,
+    "unique_ips": 1,
+    "unique_user_agents": 1,
+    "ip_distribution": {
+      "proxy": 20
+    },
+    "email_client_distribution": {
+      "Gmail": 20
+    },
+    "can_identify_user": false,
+    "can_identify_device": false,
+    "uses_proxy_protection": true
+  },
+  "detailed_results": {
+    "html-001-basic": {
+      "triggered": true,
+      "privacy_score": 100,
+      "ip_protected": true,
+      "ua_protected": true
+    },
+    "html-002-self-close": {
+      "triggered": true,
+      "privacy_score": 100,
+      "ip_protected": true,
+      "ua_protected": true
+    },
+    "html-003-uppercase": {
+      "triggered": true,
+      "privacy_score": 100,
+      "ip_protected": true,
+      "ua_protected": true
+    },
+    "html-004-single-quote": {
+      "triggered": true,
+      "privacy_score": 100,
+      "ip_protected": true,
+      "ua_protected": true
+    },
+    "html-005-no-quote": {
+      "triggered": true,
+      "privacy_score": 100,
+      "ip_protected": true,
+      "ua_protected": true
+    },
+    "html-006-dimension": {
+      "triggered": true,
+      "privacy_score": 100,
+      "ip_protected": true,
+      "ua_protected": true
+    },
+    "html-007-display-none": {
+      "triggered": true,
+      "privacy_score": 100,
+      "ip_protected": true,
+      "ua_protected": true
+    },
+    "html-008-hidden-attr": {
+      "triggered": true,
+      "privacy_score": 100,
+      "ip_protected": true,
+      "ua_protected": true
+    },
+    "html-009-loading-lazy": {
+      "triggered": true,
+      "privacy_score": 100,
+      "ip_protected": true,
+      "ua_protected": true
+    },
+    "html-010-loading-eager": {
+      "triggered": true,
+      "privacy_score": 100,
+      "ip_protected": true,
+      "ua_protected": true
+    },
+    "html-011-decoding-async": {
+      "triggered": true,
+      "privacy_score": 100,
+      "ip_protected": true,
+      "ua_protected": true
+    },
+    "html-012-decoding-sync": {
+      "triggered": true,
+      "privacy_score": 100,
+      "ip_protected": true,
+      "ua_protected": true
+    },
+    "html-013-importance-high": {
+      "triggered": true,
+      "privacy_score": 100,
+      "ip_protected": true,
+      "ua_protected": true
+    },
+    "html-014-fetchpriority-high": {
+      "triggered": true,
+      "privacy_score": 100,
+      "ip_protected": true,
+      "ua_protected": true
+    },
+    "html-015-srcset-default": {
+      "triggered": true,
+      "privacy_score": 100,
+      "ip_protected": true,
+      "ua_protected": true
+    },
+    "html-016-srcset-default": {
+      "triggered": true,
+      "privacy_score": 100,
+      "ip_protected": true,
+      "ua_protected": true
+    },
+    "html-017-crossorigin-anon": {
+      "triggered": true,
+      "privacy_score": 100,
+      "ip_protected": true,
+      "ua_protected": true
+    },
+    "html-018-referrerpolicy-noref": {
+      "triggered": true,
+      "privacy_score": 100,
+      "ip_protected": true,
+      "ua_protected": true
+    },
+    "html-019-alt-empty": {
+      "triggered": true,
+      "privacy_score": 100,
+      "ip_protected": true,
+      "ua_protected": true
+    },
+    "html-020-title": {
+      "triggered": true,
+      "privacy_score": 100,
+      "ip_protected": true,
+      "ua_protected": true
+    }
+  }
+}

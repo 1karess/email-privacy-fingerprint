@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>邮件隐私指纹测试 - 实时仪表板</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #f5f5f5;
+            color: #333;
+            padding: 20px;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 2rem;
+            border-radius: 8px;
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+        
+        .header h1 {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+        
+        .stat-card {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+        
+        .stat-number {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #667eea;
+        }
+        
+        .stat-label {
+            color: #666;
+            margin-top: 0.5rem;
+        }
+        
+        .test-results {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        
+        .test-results h2 {
+            padding: 1rem;
+            background: #f8f9fa;
+            border-bottom: 1px solid #e9ecef;
+        }
+        
+        .test-list {
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        
+        .test-item {
+            padding: 1rem;
+            border-bottom: 1px solid #e9ecef;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .test-item:last-child {
+            border-bottom: none;
+        }
+        
+        .test-info {
+            flex: 1;
+        }
+        
+        .test-id {
+            font-weight: bold;
+            color: #333;
+        }
+        
+        .test-details {
+            font-size: 0.9rem;
+            color: #666;
+            margin-top: 0.25rem;
+        }
+        
+        .test-status {
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: bold;
+        }
+        
+        .status-triggered {
+            background: #d4edda;
+            color: #155724;
+        }
+        
+        .status-blocked {
+            background: #f8d7da;
+            color: #721c24;
+        }
+        
+        .loading {
+            text-align: center;
+            padding: 2rem;
+            color: #666;
+        }
+        
+        .error {
+            text-align: center;
+            padding: 2rem;
+            color: #dc3545;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🔍 邮件隐私指纹测试</h1>
+        <p>实时监控邮件客户端的隐私保护行为</p>
+    </div>
+    
+    <div class="stats-grid">
+        <div class="stat-card">
+            <div class="stat-number" id="total-tests">0</div>
+            <div class="stat-label">总测试数</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-number" id="triggered-tests">0</div>
+            <div class="stat-label">触发测试</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-number" id="blocked-tests">0</div>
+            <div class="stat-label">阻止测试</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-number" id="success-rate">0%</div>
+            <div class="stat-label">触发率</div>
+        </div>
+    </div>
+    
+    <div class="test-results">
+        <h2>测试结果详情</h2>
+        <div class="test-list" id="test-list">
+            <div class="loading">正在加载数据...</div>
+        </div>
+    </div>
+
+    <script>
+        // 测试映射配置
+        const testMap = {
+            'html-001-basic': { id: 'HTML-001', name: '标准 <img> 标签', description: '基础图片标签测试' },
+            'html-002-self-close': { id: 'HTML-002', name: '自闭合 <img />', description: '自闭合标签测试' },
+            'html-003-uppercase': { id: 'HTML-003', name: '大写标签 <IMG>', description: '大写标签测试' },
+            'html-004-single-quote': { id: 'HTML-004', name: '单引号属性', description: '单引号属性测试' },
+            'html-005-no-quote': { id: 'HTML-005', name: '无引号属性', description: '无引号属性测试' },
+            'html-006-dimension': { id: 'HTML-006', name: '带尺寸属性', description: '尺寸属性测试' },
+            'html-007-display-none': { id: 'HTML-007', name: 'display:none 隐藏', description: '隐藏图片测试' },
+            'html-008-hidden-attr': { id: 'HTML-008', name: 'hidden 属性', description: 'hidden属性测试' },
+            'html-009-loading-lazy': { id: 'HTML-009', name: 'loading="lazy"', description: '懒加载测试' },
+            'html-010-loading-eager': { id: 'HTML-010', name: 'loading="eager"', description: '急切加载测试' },
+            'html-011-decoding-async': { id: 'HTML-011', name: 'decoding="async"', description: '异步解码测试' },
+            'html-012-decoding-sync': { id: 'HTML-012', name: 'decoding="sync"', description: '同步解码测试' },
+            'html-013-importance-high': { id: 'HTML-013', name: 'importance="high"', description: '高优先级测试' },
+            'html-014-fetchpriority-high': { id: 'HTML-014', name: 'fetchpriority="high"', description: '高获取优先级测试' },
+            'html-015-srcset-default': { id: 'HTML-015', name: 'srcset（密度）', description: '密度感知加载测试' },
+            'html-016-srcset-default': { id: 'HTML-016', name: 'srcset（宽度）', description: '宽度响应式测试' },
+            'html-017-crossorigin-anon': { id: 'HTML-017', name: 'crossorigin="anonymous"', description: 'CORS匿名测试' },
+            'html-018-referrerpolicy-noref': { id: 'HTML-018', name: 'referrerpolicy="no-referrer"', description: '无引用策略测试' },
+            'html-019-alt-empty': { id: 'HTML-019', name: '空 alt 属性', description: '空alt属性测试' },
+            'html-020-title': { id: 'HTML-020', name: '带 title 属性', description: 'title属性测试' }
+        };
+
+        // 模拟数据（基于你的测试结果）
+        const mockData = [
+            { testId: 'html-001-basic', timestamp: '2025-10-24T14:57:44.123Z' },
+            { testId: 'html-002-self-close', timestamp: '2025-10-24T14:57:44.156Z' },
+            { testId: 'html-003-uppercase', timestamp: '2025-10-24T14:57:44.189Z' },
+            { testId: 'html-004-single-quote', timestamp: '2025-10-24T14:57:44.222Z' },
+            { testId: 'html-005-no-quote', timestamp: '2025-10-24T14:57:44.255Z' },
+            { testId: 'html-006-dimension', timestamp: '2025-10-24T14:57:44.288Z' },
+            { testId: 'html-007-display-none', timestamp: '2025-10-24T14:57:44.321Z' },
+            { testId: 'html-008-hidden-attr', timestamp: '2025-10-24T14:57:44.354Z' },
+            { testId: 'html-009-loading-lazy', timestamp: '2025-10-24T14:57:44.387Z' },
+            { testId: 'html-010-loading-eager', timestamp: '2025-10-24T14:57:44.420Z' },
+            { testId: 'html-011-decoding-async', timestamp: '2025-10-24T14:57:44.453Z' },
+            { testId: 'html-012-decoding-sync', timestamp: '2025-10-24T14:57:44.486Z' },
+            { testId: 'html-013-importance-high', timestamp: '2025-10-24T14:57:44.519Z' },
+            { testId: 'html-014-fetchpriority-high', timestamp: '2025-10-24T14:57:44.552Z' },
+            { testId: 'html-015-srcset-default', timestamp: '2025-10-24T14:57:44.585Z' },
+            { testId: 'html-016-srcset-default', timestamp: '2025-10-24T14:57:44.618Z' },
+            { testId: 'html-017-crossorigin-anon', timestamp: '2025-10-24T14:57:44.651Z' },
+            { testId: 'html-018-referrerpolicy-noref', timestamp: '2025-10-24T14:57:44.684Z' },
+            { testId: 'html-019-alt-empty', timestamp: '2025-10-24T14:57:44.717Z' },
+            { testId: 'html-020-title', timestamp: '2025-10-24T14:57:44.750Z' }
+        ];
+
+        function displayStats(logs) {
+            const totalTests = Object.keys(testMap).length;
+            const triggeredTests = new Set(logs.map(log => log.testId)).size;
+            const blockedTests = totalTests - triggeredTests;
+            const successRate = totalTests > 0 ? Math.round((triggeredTests / totalTests) * 100) : 0;
+            
+            document.getElementById('total-tests').textContent = totalTests;
+            document.getElementById('triggered-tests').textContent = triggeredTests;
+            document.getElementById('blocked-tests').textContent = blockedTests;
+            document.getElementById('success-rate').textContent = successRate + '%';
+        }
+
+        function displayTestResults(logs) {
+            const testList = document.getElementById('test-list');
+            
+            if (logs.length === 0) {
+                testList.innerHTML = '<div class="loading">📝 暂无测试数据，请先运行测试</div>';
+                return;
+            }
+            
+            // 按测试ID分组
+            const testGroups = {};
+            logs.forEach(log => {
+                if (!testGroups[log.testId]) {
+                    testGroups[log.testId] = [];
+                }
+                testGroups[log.testId].push(log);
+            });
+            
+            let html = '';
+            
+            // 显示所有测试结果
+            Object.keys(testMap).forEach(testKey => {
+                const testInfo = testMap[testKey];
+                const testLogs = testGroups[testKey] || [];
+                const isTriggered = testLogs.length > 0;
+                const latestLog = testLogs[testLogs.length - 1];
+                
+                html += `
+                    <div class="test-item">
+                        <div class="test-info">
+                            <div class="test-id">${testInfo.id} - ${testInfo.name}</div>
+                            <div class="test-details">
+                                ${testInfo.description}
+                                ${isTriggered ? ` | 最后触发: ${new Date(latestLog.timestamp).toLocaleString()}` : ' | 未触发'}
+                            </div>
+                        </div>
+                        <div class="test-status ${isTriggered ? 'status-triggered' : 'status-blocked'}">
+                            ${isTriggered ? '✅ 已触发' : '❌ 被阻止'}
+                        </div>
+                    </div>
+                `;
+            });
+            
+            testList.innerHTML = html;
+        }
+
+        // 页面加载时显示数据
+        document.addEventListener('DOMContentLoaded', function() {
+            displayStats(mockData);
+            displayTestResults(mockData);
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,13 @@
+{
+  "run_id": "3de3d2f4fbb9416283a0bc56df4aed8b",
+  "timestamp": "2025-10-24T23:44:05.834250Z",
+  "sender": "yuqizheng325@gmail.com",
+  "receiver": "nicai51213@gmail.com",
+  "tests": [
+    {
+      "path": "tests/phase1/html-img-tests.html",
+      "subject": "Phase1-HTML IMG 标签测试 (HTML-001~HTML-020)",
+      "category": "HTML-IMG"
+    }
+  ]
+}
