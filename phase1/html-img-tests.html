@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <title>Phase 1 - HTML IMG 追踪变体</title>
+  <style>
+    body {
+      font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+      line-height: 1.6;
+      padding: 16px;
+      background: #f5f5f5;
+    }
+
+    main {
+      max-width: 760px;
+      margin: 0 auto;
+    }
+
+    section {
+      background: #fff;
+      border: 1px solid #d0d7de;
+      border-radius: 6px;
+      padding: 16px;
+      margin-bottom: 16px;
+    }
+
+    h1 {
+      text-align: center;
+    }
+
+    h2 {
+      margin-top: 0;
+      font-size: 1.1rem;
+    }
+
+    code {
+      font-family: ui-monospace, SFMono-Regular, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      background: #f6f8fa;
+      padding: 0 4px;
+      border-radius: 4px;
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <h1>Phase 1 - HTML IMG 追踪变体</h1>
+    <p>本邮件对应研究矩阵中的 <strong>HTML 标签资源加载测试（HTML-001 ~ HTML-020）</strong>，所有探针均指向 webhook 以记录行为。</p>
+
+    <section data-test-id="HTML-001">
+      <h2>HTML-001 标准 <code>&lt;img&gt;</code></h2>
+      <img src="__WEBHOOK_BASE__/phase1/html-001-basic.gif" width="1" height="1" alt="">
+    </section>
+
+    <section data-test-id="HTML-002">
+      <h2>HTML-002 自闭合 <code>&lt;img /&gt;</code></h2>
+      <img src="__WEBHOOK_BASE__/phase1/html-002-self-close.gif" width="1" height="1" alt="" />
+    </section>
+
+    <section data-test-id="HTML-003">
+      <h2>HTML-003 大写标签 <code>&lt;IMG&gt;</code></h2>
+      <IMG SRC="__WEBHOOK_BASE__/phase1/html-003-uppercase.gif" WIDTH="1" HEIGHT="1">
+    </section>
+
+    <section data-test-id="HTML-004">
+      <h2>HTML-004 单引号属性</h2>
+      <img src='__WEBHOOK_BASE__/phase1/html-004-single-quote.gif' width="1" height="1" alt="">
+    </section>
+
+    <section data-test-id="HTML-005">
+      <h2>HTML-005 无引号属性</h2>
+      <img src=__WEBHOOK_BASE__/phase1/html-005-no-quote.gif width=1 height=1 alt="">
+    </section>
+
+    <section data-test-id="HTML-006">
+      <h2>HTML-006 带尺寸属性</h2>
+      <img src="__WEBHOOK_BASE__/phase1/html-006-dimension.gif" width="48" height="32" alt="尺寸测试">
+    </section>
+
+    <section data-test-id="HTML-007">
+      <h2>HTML-007 <code>display:none</code> 隐藏</h2>
+      <img src="__WEBHOOK_BASE__/phase1/html-007-display-none.gif" style="display:none" alt="">
+    </section>
+
+    <section data-test-id="HTML-008">
+      <h2>HTML-008 <code>hidden</code> 属性</h2>
+      <img src="__WEBHOOK_BASE__/phase1/html-008-hidden-attr.gif" hidden alt="">
+    </section>
+
+    <section data-test-id="HTML-009">
+      <h2>HTML-009 <code>loading="lazy"</code></h2>
+      <img src="__WEBHOOK_BASE__/phase1/html-009-loading-lazy.gif" loading="lazy" width="1" height="1" alt="">
+    </section>
+
+    <section data-test-id="HTML-010">
+      <h2>HTML-010 <code>loading="eager"</code></h2>
+      <img src="__WEBHOOK_BASE__/phase1/html-010-loading-eager.gif" loading="eager" width="1" height="1" alt="">
+    </section>
+
+    <section data-test-id="HTML-011">
+      <h2>HTML-011 <code>decoding="async"</code></h2>
+      <img src="__WEBHOOK_BASE__/phase1/html-011-decoding-async.gif" decoding="async" width="1" height="1" alt="">
+    </section>
+
+    <section data-test-id="HTML-012">
+      <h2>HTML-012 <code>decoding="sync"</code></h2>
+      <img src="__WEBHOOK_BASE__/phase1/html-012-decoding-sync.gif" decoding="sync" width="1" height="1" alt="">
+    </section>
+
+    <section data-test-id="HTML-013">
+      <h2>HTML-013 <code>importance="high"</code></h2>
+      <img src="__WEBHOOK_BASE__/phase1/html-013-importance-high.gif" importance="high" width="1" height="1" alt="">
+    </section>
+
+    <section data-test-id="HTML-014">
+      <h2>HTML-014 <code>fetchpriority="high"</code></h2>
+      <img src="__WEBHOOK_BASE__/phase1/html-014-fetchpriority-high.gif" fetchpriority="high" width="1" height="1" alt="">
+    </section>
+
+    <section data-test-id="HTML-015">
+      <h2>HTML-015 <code>srcset</code>（密度）</h2>
+      <img
+        srcset="__WEBHOOK_BASE__/phase1/html-015-srcset-1x.gif 1x, __WEBHOOK_BASE__/phase1/html-015-srcset-2x.gif 2x"
+        src="__WEBHOOK_BASE__/phase1/html-015-srcset-default.gif"
+        width="1"
+        height="1"
+        alt=""
+      >
+    </section>
+
+    <section data-test-id="HTML-016">
+      <h2>HTML-016 <code>srcset</code>（宽度）</h2>
+      <img
+        srcset="__WEBHOOK_BASE__/phase1/html-016-srcset-320.gif 320w, __WEBHOOK_BASE__/phase1/html-016-srcset-640.gif 640w"
+        sizes="(max-width: 480px) 320px, 640px"
+        src="__WEBHOOK_BASE__/phase1/html-016-srcset-default.gif"
+        width="1"
+        height="1"
+        alt=""
+      >
+    </section>
+
+    <section data-test-id="HTML-017">
+      <h2>HTML-017 <code>crossorigin="anonymous"</code></h2>
+      <img src="__WEBHOOK_BASE__/phase1/html-017-crossorigin-anon.gif" crossorigin="anonymous" width="1" height="1" alt="">
+    </section>
+
+    <section data-test-id="HTML-018">
+      <h2>HTML-018 <code>referrerpolicy="no-referrer"</code></h2>
+      <img src="__WEBHOOK_BASE__/phase1/html-018-referrerpolicy-noref.gif" referrerpolicy="no-referrer" width="1" height="1" alt="">
+    </section>
+
+    <section data-test-id="HTML-019">
+      <h2>HTML-019 空 <code>alt</code></h2>
+      <img src="__WEBHOOK_BASE__/phase1/html-019-alt-empty.gif" alt="">
+    </section>
+
+    <section data-test-id="HTML-020">
+      <h2>HTML-020 带 <code>title</code></h2>
+      <img src="__WEBHOOK_BASE__/phase1/html-020-title.gif" title="HTML-020 带 title 属性" width="1" height="1" alt="HTML-020 带 title 属性">
+    </section>
+  </main>
+</body>
+</html>

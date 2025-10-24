@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <title>Phase 1 - CSS 基础兼容性</title>
+  <style>
+    body {
+      font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+      line-height: 1.6;
+      padding: 16px;
+    }
+
+    section {
+      border: 1px solid #d0d7de;
+      border-radius: 6px;
+      padding: 12px 16px;
+      margin-bottom: 20px;
+    }
+
+    .internal-bg {
+      width: 8px;
+      height: 8px;
+      background-image: url("https://webhook.site/d76b930f-74bd-402b-b863-5117c1fd8ae4/phase1/css-003-internal-style");
+    }
+
+    .media-query-probe {
+      width: 8px;
+      height: 8px;
+    }
+
+    @media (prefers-color-scheme: dark) {
+      .media-query-probe {
+        background-image: url("https://webhook.site/d76b930f-74bd-402b-b863-5117c1fd8ae4/phase1/css-004-dark-mode");
+      }
+    }
+  </style>
+</head>
+<body>
+  <h1>Phase 1 - CSS 基础兼容性</h1>
+  <p>目标：确认 Gmail 对内联样式与基本 CSS 特性的处理方式。</p>
+
+  <section data-test-id="CSS-001">
+    <h2>CSS-001 内联 <code>background-image</code></h2>
+    <div style="width:8px;height:8px;background:url('https://webhook.site/d76b930f-74bd-402b-b863-5117c1fd8ae4/phase1/css-001-inline-bg')"></div>
+  </section>
+
+  <section data-test-id="CSS-002">
+    <h2>CSS-002 内联 <code>list-style-image</code></h2>
+    <ul style="list-style-image:url('https://webhook.site/d76b930f-74bd-402b-b863-5117c1fd8ae4/phase1/css-002-list-style');">
+      <li>测试项</li>
+    </ul>
+  </section>
+
+  <section data-test-id="CSS-003">
+    <h2>CSS-003 内部样式表</h2>
+    <div class="internal-bg" aria-hidden="true"></div>
+  </section>
+
+  <section data-test-id="CSS-004">
+    <h2>CSS-004 媒体查询（深色模式）</h2>
+    <div class="media-query-probe" aria-hidden="true"></div>
+  </section>
+</body>
+</html>
