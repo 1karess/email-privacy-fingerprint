@@ -1,133 +1,153 @@
-# 🔍 邮件客户端隐私指纹检测框架
+# 邮件隐私追踪测试项目
 
-## 📁 项目结构
+## 项目概述
+本项目用于测试邮件客户端的隐私保护机制，特别是对追踪像素的检测和阻止能力。
 
-```
-邮件/
-├── core/                   # 核心功能
-│   └── api/
-│       └── webhook.js     # Vercel Functions webhook处理
-├── tests/                  # 测试相关
-│   └── phase1/
-│       ├── html-img-tests.html  # 20个HTML图片追踪测试用例
-│       └── test-map.json        # 测试映射配置
-├── data/                   # 数据存储
-│   ├── webhook-logs.json       # 实时webhook日志数据
-│   ├── analysis-report.json    # 分析报告数据
-│   ├── test-record.xlsx        # 测试记录Excel文件
-│   └── logs/                   # 日志文件目录
-├── analysis/               # 数据分析和可视化
-│   ├── dashboard.html          # 实时可视化仪表板
-│   ├── realtime-monitor.py     # 实时监控脚本
-│   └── generate-report.py      # 分析报告生成器
-├── scripts/                # 脚本和工具
-│   ├── send_tests.py           # 邮件发送脚本
-│   ├── analyze_results.py      # 结果分析工具
-│   ├── parse_webhook_events.py # webhook事件解析器
-│   ├── start-monitoring.sh     # 一键启动监控脚本
-│   └── run-tests.sh            # 一键运行测试脚本
-├── config/                 # 配置文件
-│   ├── package.json            # Node.js项目配置
-│   ├── vercel.json          # Vercel部署配置
-│   └── webhook_base.txt       # webhook基础URL配置
-└── docs/                   # 项目文档
-    ├── README.md              # 项目说明文档
-    └── PROJECT_STRUCTURE.md   # 项目结构说明
-```
+## 核心假设
+**关键假设**: 邮件客户端是否会加载`<input type="image">`的图片？
 
-## 🚀 快速开始
+- 如果验证 → 发现新的追踪方法
+- 如果否定 → 邮件客户端正确禁用了表单元素
 
-### 1. 一键运行测试
+## 🎉 测试结果总结
+
+### ✅ 重大发现
+**核心假设得到验证！** `<input type="image">`确实可以用于邮件追踪！
+
+### 📊 成功触发的追踪向量
+1. **传统方法**: `<img>`标签 ✅
+2. **新方法1**: `<input type="image" src="...">` ✅
+3. **新方法2**: `<input type="image" formaction="...">` ✅ ⭐ **意外发现！**
+
+### ❌ 未触发的测试
+4. **`<button type="image">`** ❌ (邮件客户端不支持)
+
+## 项目结构
+
+### 核心文件
+- `api/webhook.js` - 核心webhook处理程序，用于接收和记录追踪请求
+- `config/` - 配置文件目录
+
+### 测试结构
+
+#### 阶段一 (Phase 1) - 基础HTML IMG测试
+**目录**: `tests/phase1/`, `scripts/phase1/`
+
+**目标**: 测试传统`<img>`标签的各种变体在邮件中的行为
+
+**测试文件**:
+- `html-img-tests.html` - 包含HTML-001到HTML-020的20个测试用例
+- `send_tests.py` - 发送阶段一测试邮件的脚本
+
+**测试内容**:
+- 标准`<img>`标签
+- 自闭合标签
+- 大写标签
+- 不同引号风格
+- 隐藏属性测试
+- 加载策略测试
+- 跨域和引用策略测试
+
+#### 阶段二 (Phase 2) - Input vs Img精确对比测试
+**目录**: `tests/phase2/`, `scripts/phase2/`
+
+**目标**: 验证`<input type="image">`在邮件中的追踪能力
+
+**测试文件**:
+- `img-only-test.html` - 传统`<img>`标签测试（对照组）
+- `input-only-test.html` - `<input type="image" src="...">`测试
+- `input-formaction-test.html` - `<input type="image" formaction="...">`测试
+- `button-image-test.html` - `<button type="image">`测试
+- `send-input-vs-img-test.py` - 发送阶段二测试邮件的脚本
+
+**测试内容**:
+- 4个独立的测试邮件，分别测试不同追踪向量
+- 1x1像素追踪测试
+- 精确对比不同HTML元素的追踪能力
+
+## 使用方法
+
+### 阶段一测试
 ```bash
-./scripts/run-tests.sh
+cd scripts/phase1
+python send_tests.py
 ```
 
-### 2. 启动实时监控
+### 阶段二测试
 ```bash
-./scripts/start-monitoring.sh
+cd scripts/phase2
+python send-input-vs-img-test.py
 ```
 
-### 3. 查看仪表板
-```bash
-open analysis/dashboard.html
-```
+### 查看结果
+1. 检查Vercel项目日志
+2. 查看webhook接收到的请求
+3. 分析哪些测试用例被触发
 
-### 4. 生成分析报告
-```bash
-python analysis/generate-report.py
-```
+## 配置说明
 
-## 📊 功能特性
-
-- **实时数据同步**: 测试数据自动保存到本地文件
-- **可视化仪表板**: 实时显示测试结果和分析
-- **自动监控**: 实时监控webhook请求并分析
-- **报告生成**: 自动生成详细的Markdown分析报告
-- **分类管理**: 按功能分类组织项目文件
-
-## 🔧 配置说明
-
-### webhook配置
-编辑 `config/webhook_base.txt` 文件，设置你的Vercel webhook地址：
-```
-https://your-project.vercel.app/api/webhook
-```
+### Webhook配置
+- 主webhook: `https://email-privacy-fingerprint.vercel.app/api/webhook/`
+- 阶段一测试路径: `/phase1/`
+- 阶段二测试路径: `/input-vs-img/`
 
 ### 邮件配置
-编辑 `scripts/send_tests.py` 文件中的邮件设置：
-```python
-SENDER = "your-email@gmail.com"
-PASSWORD = "your-app-password"
-RECEIVER = "target-email@gmail.com"
-```
+- 发送方: `yuqizheng325@gmail.com`
+- 接收方: `nicai51213@gmail.com`
+- 使用Gmail应用密码进行认证
 
-## 📈 数据流
+## 测试假设
 
-```
-用户访问测试邮件
-→ 邮件客户端加载图片
-→ 触发 core/api/webhook.js
-→ 数据保存到 data/webhook-logs.json
-→ analysis/ 工具实时分析
-→ 生成可视化仪表板和报告
-```
+### 阶段一假设
+- 传统`<img>`标签应该能够正常追踪
+- 各种HTML变体可能有不同的行为
+- 隐藏属性可能影响追踪效果
 
-## 🎯 测试用例
+### 阶段二假设
+- `<input type="image">`可能被邮件客户端当作表单元素处理
+- 如果input能追踪，则发现新的追踪方法
+- 如果input不能追踪，则邮件客户端正确禁用了表单元素
 
-项目包含20个HTML追踪向量测试：
+## 🚨 安全影响分析
 
-1. **HTML-001** - 标准 `<img>` 标签
-2. **HTML-002** - 自闭合 `<img />` 标签
-3. **HTML-003** - 大写标签 `<IMG>`
-4. **HTML-004** - 单引号属性
-5. **HTML-005** - 无引号属性
-6. **HTML-006** - 带尺寸属性
-7. **HTML-007** - `display:none` 隐藏
-8. **HTML-008** - `hidden` 属性
-9. **HTML-009** - `loading="lazy"`
-10. **HTML-010** - `loading="eager"`
-11. **HTML-011** - `decoding="async"`
-12. **HTML-012** - `decoding="sync"`
-13. **HTML-013** - `importance="high"`
-14. **HTML-014** - `fetchpriority="high"`
-15. **HTML-015** - `srcset`（密度）
-16. **HTML-016** - `srcset`（宽度）
-17. **HTML-017** - `crossorigin="anonymous"`
-18. **HTML-018** - `referrerpolicy="no-referrer"`
-19. **HTML-019** - 空 `alt` 属性
-20. **HTML-020** - 带 `title` 属性
+### ⚠️ 重大安全发现
+**`<input type="image">`确实可以用于邮件追踪！**
 
-## 📝 注意事项
+**潜在安全风险**:
+- ✅ **绕过某些反追踪工具** - 现有工具可能只检测`<img>`标签
+- ✅ **用户更难发现** - 这种追踪方法更隐蔽
+- ✅ **邮件安全工具可能不会检测** - input元素可能被忽略
+- ✅ **发现新的追踪向量** - 攻击者可以利用此方法
 
-1. **隐私保护** - 本框架仅用于安全研究和教育目的
-2. **合法使用** - 请确保在合法范围内使用本框架
-3. **数据安全** - 测试数据请妥善保管，避免泄露
-4. **持续更新** - 邮件客户端会不断更新隐私保护机制
+**具体发现**:
+1. `<input type="image" src="...">` - 高追踪潜力 ✅
+2. `<input type="image" formaction="...">` - 意外发现 ✅
+3. `<button type="image">` - 不支持 ❌
 
-## 🤝 贡献指南
+### 🎯 建议措施
+- 更新邮件隐私保护工具以检测input元素
+- 用户需要了解这种新的追踪方法
+- 邮件客户端应考虑禁用input元素
 
-欢迎提交Issue和Pull Request来改进本项目。
+## 部署说明
 
-## 📄 许可证
+### Vercel部署
+1. 确保`api/webhook.js`在正确位置
+2. 使用`vercel --prod`部署
+3. 更新`config/webhook_base.txt`中的webhook地址
 
-MIT License
+### 注意事项
+1. API文件必须放在`api/`目录下
+2. 部署后检查Vercel控制台确认API正常工作
+3. 使用不同的run_id避免缓存影响
+
+## 注意事项
+
+1. 测试前确保webhook服务正常运行
+2. 使用不同的run_id避免缓存影响
+3. 记录测试时间和环境信息
+4. 分析结果时考虑邮件客户端的差异
+
+## 清理说明
+
+本项目已清理所有历史测试数据和可视化内容，只保留核心测试代码。如需重新开始测试，请直接运行相应阶段的脚本。

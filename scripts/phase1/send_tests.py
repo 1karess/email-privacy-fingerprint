@@ -15,7 +15,7 @@ PASSWORD = "cyqszyoonzwhtdoi"
 RECEIVER = "nicai51213@gmail.com"
 
 RUN_ID = uuid.uuid4().hex
-WEBHOOK_BASE = Path("config/webhook_base.txt").read_text(encoding="utf-8").strip().rstrip("/")
+WEBHOOK_BASE = Path("../../config/webhook_base.txt").read_text(encoding="utf-8").strip().rstrip("/")
 
 
 @dataclass(frozen=True)
@@ -69,7 +69,7 @@ def load_phase1_tests() -> List[TestCase]:
     """
     config = [
         {
-            "path": "tests/phase1/html-img-tests.html",
+            "path": "../../tests/phase1/html-img-tests.html",
             "subject": "Phase1-HTML IMG 标签测试 (HTML-001~HTML-020)",
             "category": "HTML-IMG",
         }
@@ -88,7 +88,7 @@ def export_manifest(cases: Iterable[TestCase]) -> None:
         "receiver": RECEIVER,
         "tests": [case.__dict__ for case in cases],
     }
-    Path("data/phase1-run-manifest.json").write_text(
+    Path("../../data/phase1-run-manifest.json").write_text(
         json.dumps(manifest, ensure_ascii=False, indent=2), encoding="utf-8"
     )
     print(f"已写入 run manifest: data/phase1-run-manifest.json（run_id={RUN_ID}）")
