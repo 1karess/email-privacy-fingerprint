@@ -52,12 +52,29 @@ function saveLogEntry(logData) {
 
 export default function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Methods', 'GET, HEAD, POST, OPTIONS');
+  res.setHeader('Access-Control-Allow-Methods', 'GET, HEAD, POST, OPTIONS, DELETE');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
 
   if (req.method === 'OPTIONS') {
     res.status(204).end();
     return;
+  }
+
+  // 清理日志功能
+  if (req.method === 'DELETE' && req.url.includes('/clear-logs')) {
+    try {
+      // 清空日志文件
+      fs.writeFileSync(LOG_FILE, JSON.stringify([], null, 2));
+      const projectLogFile = './data/webhook-logs.json';
+      if (fs.existsSync('./data')) {
+        fs.writeFileSync(projectLogFile, JSON.stringify([], null, 2));
+      }
+      res.status(200).json({ message: 'Logs cleared successfully' });
+      return;
+    } catch (error) {
+      res.status(500).json({ error: 'Failed to clear logs' });
+      return;
+    }
   }
 
   const timestamp = new Date().toISOString();
@@ -112,19 +129,79 @@ export default function handler(req, res) {
   console.log('Referer:', referer);
   console.log('Method:', req.method);
   console.log('Path:', normalizedPath || '/');
+  console.log('Path Fragment:', pathFragment);
+  console.log('Derived Test:', derivedTest);
   console.log('Raw Query:', url.search || '');
+  console.log('Full URL:', req.url);
   console.log('================================');
 
   res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
   res.setHeader('Pragma', 'no-cache');
   res.setHeader('Expires', '0');
-  res.setHeader('Content-Type', 'image/gif');
-  res.setHeader('Content-Length', PIXEL_BUFFER.length);
+
+  // 根据文件扩展名设置不同的Content-Type
+  const fileExt = pathFragment.split('.').pop()?.toLowerCase();
+  let contentType = 'image/gif'; // 默认
+  let responseBuffer = PIXEL_BUFFER; // 默认
+
+  switch (fileExt) {
+    case 'css':
+      contentType = 'text/css';
+      responseBuffer = Buffer.from('/* Link tag tracking test */');
+      break;
+    case 'js':
+      contentType = 'application/javascript';
+      responseBuffer = Buffer.from('// Link tag tracking test');
+      break;
+    case 'json':
+      contentType = 'application/json';
+      responseBuffer = Buffer.from('{"test": "link tag tracking"}');
+      break;
+    case 'xml':
+      contentType = 'application/xml';
+      responseBuffer = Buffer.from('<?xml version="1.0"?><test>link tag tracking</test>');
+      break;
+    case 'html':
+      contentType = 'text/html';
+      responseBuffer = Buffer.from('<!DOCTYPE html><html><head><title>Link Tag Tracking Test</title></head><body><h1>Link Tag Tracking Test</h1></body></html>');
+      break;
+    case 'php':
+      contentType = 'text/html';
+      responseBuffer = Buffer.from('<?php // Link tag tracking test ?>');
+      break;
+    case 'mp4':
+      contentType = 'video/mp4';
+      responseBuffer = Buffer.from('Media tracking test - MP4');
+      break;
+    case 'mp3':
+      contentType = 'audio/mpeg';
+      responseBuffer = Buffer.from('Media tracking test - MP3');
+      break;
+    case 'jpg':
+    case 'jpeg':
+      contentType = 'image/jpeg';
+      responseBuffer = PIXEL_BUFFER;
+      break;
+    case 'vtt':
+      contentType = 'text/vtt';
+      responseBuffer = Buffer.from('WEBVTT\n\n00:00:00.000 --> 00:00:01.000\nMedia tracking test');
+      break;
+    case 'ico':
+    case 'png':
+    case 'gif':
+    default:
+      contentType = 'image/gif';
+      responseBuffer = PIXEL_BUFFER;
+      break;
+  }
+
+  res.setHeader('Content-Type', contentType);
+  res.setHeader('Content-Length', responseBuffer.length);
 
   if (req.method === 'HEAD') {
     res.status(200).end();
     return;
   }
 
-  res.status(200).end(PIXEL_BUFFER);
+  res.status(200).end(responseBuffer);
 }
